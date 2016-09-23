@@ -42,8 +42,26 @@
       input.value = '';
     });
   }
+  function updateContact(contact) {
+    contact.firstname = getVal('input[name="firstname"]');
+    contact.lastname = getVal('input[name="lastname"]');
+    contact.telephone[0] = getVal('input[name="telephone"]');
+    contact.address[0].street = getVal('input[name="address-street"]');
+    contact.address[0].city = getVal('input[name="address-city"]');
+    contact.address[0].state = getVal('input[name="address-state"]');
+    return contact;
+  }
+  function updateContactListItem(contact){
+    var li = cl.querySelector('a[data-id="' + contact.id +'"]');
+    li.innerHTML = contact.firstname + ' ' + contact.lastname;
+  }
   function repopulateForm(contact){
     setVal('input[name="firstname"]', contact.firstname);
+    setVal('input[name="lastname"]', contact.lastname);
+    setVal('input[name="telephone"]', contact.telephone[0]);
+    setVal('input[name="address-street"]', contact.address[0].street);
+    setVal('input[name="address-city"]', contact.address[0].city);
+    setVal('input[name="address-state"]', contact.address[0].state);
   }
   function appendContactDisplay(contact) {
     cd.innerHTML = '';
@@ -53,6 +71,23 @@
                                     'tels': contact.telephone,
                                     'adds': contact.address});
     cd.insertAdjacentHTML('afterbegin', htmlStr);
+    var btn = cd.querySelector('.contact > input[value=Edit]');
+    btn.addEventListener('click',
+    function(evt){
+      evt.preventDefault();
+      var val = this.getAttribute('value');
+      if (val === 'Edit') {
+        repopulateForm(contact);
+        this.setAttribute('value','Update');
+      } else {
+        contact = updateContact(contact);
+        this.setAttribute('value','Edit');
+        clearForm();
+        updateContactListItem(contact);
+        appendContactDisplay(contact);
+      }
+    },
+    false);
   }
 
   exports.appendContactList = function(contact) {
@@ -66,7 +101,6 @@
     function(evt) {
       evt.preventDefault();
       appendContactDisplay(contact);
-      repopulateForm(contact);
     },
     false);
   };
@@ -85,15 +119,14 @@
 }
 )(this.h = {});
 
-
-function doIt () {
+function makeItHappen () {
   var contact = h.buildContact();
   h.appendContactList(contact);
 }
 
 var form = document.querySelector('#form');
 
-form.addEventListener("submit", doIt, false);
+form.addEventListener("submit", makeItHappen, false);
 
 form.addEventListener("submit", function(evt) {
   evt.preventDefault();

@@ -30,7 +30,7 @@
 		<li><a href="#"data-id="<%= dataid %>"><%= firstname %> <%= lastname %></a></li>
 		</script>
 		<script type="text/template" id="template-contact-display">
-		<div class="contact" data-id="<%= dataid %>"><h3><%= firstname%> <%= lastname%></h3><p>First name: <%= firstname%></p><p>Last name: <%= lastname%><p>Phone Number(s)</p><ul><% _.forEach(tels, function(tel) { %><li><%= tel%></li><% }); %></ul></p><p>Address(es)</p><ul><% _.forEach(adds, function(add) { %><li><p><%= add.street %></p><p><%= add.city %>, <%= add.state %></p></li><% }); %></ul></div>
+		<div class="contact" data-id="<%= dataid %>"><h3><%= firstname%> <%= lastname%></h3><input type="button" value="Edit"><p>First name: <%= firstname%></p><p>Last name: <%= lastname%><p>Phone Number(s)</p><ul><% _.forEach(tels, function(tel) { %><li><%= tel%></li><% }); %></ul></p><p>Address(es)</p><ul><% _.forEach(adds, function(add) { %><li><p><%= add.street %></p><p><%= add.city %>, <%= add.state %></p></li><% }); %></ul></div>
 		</script>
 		<script src="//code.jquery.com/jquery.min.js"></script>
 		<script src="js/lodash.min.js"></script>
