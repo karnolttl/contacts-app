@@ -9,8 +9,10 @@
 // var contact = {
 //   firstname: 'Bob',
 //   lastname: 'Jones',
-//   telephone: ['123-123-1234', '111-222-3333'],
-//   address: [{street: '1234 Elm Ave.',
+//   telephone: [{number:'123-123-1234'
+//                type: 'mobile'}],
+//   address: [{ type: 'home',
+//             street: '1234 Elm Ave.',
 //             city: 'Kind',
 //             state: 'CA'},
 //             {street: '1234 Bro St.',
@@ -21,10 +23,16 @@
 (function(exports) {
   var cd = document.querySelector('#contacts-display');
   var cl = document.querySelector('#contacts-list > ul');
+  var tn = document.querySelector('#telephone-numbers');
+  var ad = document.querySelector('#addresses');
   var tpl_display = document.querySelector('#template-contact-display');
   var compiled_display = _.template(tpl_display.textContent);
   var tpl_list = document.querySelector('#template-contact-list');
   var compiled_list = _.template(tpl_list.textContent);
+  var tpl_telephone = document.querySelector('#template-telephone-number');
+  var compiled_telephone = _.template(tpl_telephone.textContent);
+  var tpl_address = document.querySelector('#template-address');
+  var compiled_address = _.template(tpl_address.textContent);
 
   function getVal(selector) {
       return document.querySelector(selector).value
@@ -45,10 +53,27 @@
   function updateContact(contact) {
     contact.firstname = getVal('input[name="firstname"]');
     contact.lastname = getVal('input[name="lastname"]');
-    contact.telephone[0] = getVal('input[name="telephone"]');
-    contact.address[0].street = getVal('input[name="address-street"]');
-    contact.address[0].city = getVal('input[name="address-city"]');
-    contact.address[0].state = getVal('input[name="address-state"]');
+
+    var teleNums = document.querySelectorAll('.telephone-number');
+    var teleArray = [];
+    _.forEach(teleNums, function(val) {
+      var num = val.querySelector('input[name="telephone"]').value;
+      var typ = val.querySelector('select[name="telephone-type"]').value;
+      teleArray.push({number: num, type: typ});
+    });
+    contact.telephone = teleArray;
+    var addresses = document.querySelectorAll('.address');
+    var addArray = [];
+    var addObj = {};
+    _.forEach(addresses, function(val) {
+      var str = val.querySelector('input[name="address-street"]').value;
+      var cit = val.querySelector('input[name="address-city"]').value;
+      var sta = val.querySelector('input[name="address-state"]').value;
+      var typ = val.querySelector('select[name="address-type"]').value;
+      addArray.push({ street: str, city: cit, state: sta, type: typ});
+    });
+    contact.address = addArray;
+
     return contact;
   }
   function updateContactListItem(contact){
@@ -58,10 +83,20 @@
   function repopulateForm(contact){
     setVal('input[name="firstname"]', contact.firstname);
     setVal('input[name="lastname"]', contact.lastname);
-    setVal('input[name="telephone"]', contact.telephone[0]);
-    setVal('input[name="address-street"]', contact.address[0].street);
-    setVal('input[name="address-city"]', contact.address[0].city);
-    setVal('input[name="address-state"]', contact.address[0].state);
+    tn.innerHTML = '';
+    _.forEach(contact.telephone, function(tel) {
+      var htmlStr = compiled_telephone({'tele': tel.number});
+      tn.insertAdjacentHTML('beforeend', htmlStr);
+      tn.querySelector('.telephone-number:last-child > select').value = tel.type;
+    });
+    ad.innerHTML = '';
+    _.forEach(contact.address, function(add) {
+      var htmlStr = compiled_address({  'addstreet': add.street,
+                                        'addcity': add.city,
+                                        'addstate': add.state});
+      ad.insertAdjacentHTML('beforeend', htmlStr);
+      ad.querySelector('.address:last-child > select').value = add.type;
+    });
   }
   function appendContactDisplay(contact) {
     cd.innerHTML = '';
@@ -106,14 +141,28 @@
   };
 
   exports.buildContact = function() {
+    var teleNums = document.querySelectorAll('.telephone-number');
+    var teleArray = [];
+    _.forEach(teleNums, function(val) {
+      var num = val.querySelector('input[name="telephone"]').value;
+      var typ = val.querySelector('select[name="telephone-type"]').value;
+      teleArray.push({number: num, type: typ});
+    });
+    var addresses = document.querySelectorAll('.address');
+    var addArray = [];
+    _.forEach(addresses, function(val) {
+      var str = val.querySelector('input[name="address-street"]').value;
+      var cit = val.querySelector('input[name="address-city"]').value;
+      var sta = val.querySelector('input[name="address-state"]').value;
+      var typ = val.querySelector('select[name="address-type"]').value;
+      addArray.push({ street: str, city: cit, state: sta, type: typ});
+    });
     return {
       id: generateID(),
       firstname: getVal('input[name="firstname"]'),
       lastname: getVal('input[name="lastname"]'),
-      telephone: [getVal('input[name="telephone"]')],
-      address: [{street: getVal('input[name="address-street"]'),
-                city: getVal('input[name="address-city"]'),
-                state: getVal('input[name="address-state"]')}]
+      telephone: teleArray,
+      address: addArray
     };
   };
 }
@@ -131,3 +180,26 @@ form.addEventListener("submit", makeItHappen, false);
 form.addEventListener("submit", function(evt) {
   evt.preventDefault();
 });
+
+var tpl_telephone = document.querySelector('#template-telephone-number');
+var compiled_telephone = _.template(tpl_telephone.textContent);
+var tpl_address = document.querySelector('#template-address');
+var compiled_address = _.template(tpl_address.textContent);
+var tn = document.querySelector('#telephone-numbers');
+var ad = document.querySelector('#addresses');
+
+var newTel = document.querySelector('#new-tel');
+newTel.addEventListener('click', function(evt) {
+  var htmlStr = compiled_telephone({'tele': ''});
+  tn.insertAdjacentHTML('beforeend', htmlStr);
+},
+false);
+
+var newAdd = document.querySelector('#new-add');
+newAdd.addEventListener('click', function(evt) {
+  var htmlStr = compiled_address({  'addstreet': '',
+                                    'addcity': '',
+                                    'addstate': ''});
+  ad.insertAdjacentHTML('beforeend', htmlStr);
+},
+false);

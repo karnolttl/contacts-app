@@ -14,14 +14,34 @@
 			<input type="text" name="firstname" required><br>
 			<label for="lastname">Last name</label><br>
 			<input type="text" name="lastname" required><br>
-			<label for="telephone">Phone number</label><br>
-			<input type="tel" pattern="\d{3}[\-]?\d{3}[\-]?\d{4}" name="telephone"><br>
-			<label for="address-street">Street</label><br>
-			<input type="text" name="address-street" required><br>
-			<label for="address-city">City</label><br>
-			<input type="text" name="address-city" required><br>
-			<label for="address-state">State</label><br>
-			<input type="text" name="address-state" required><br>
+			<label>Phone number(s)</label><input type="button" id="new-tel" value="New"><br>
+			<div id="telephone-numbers">
+				<div class="telephone-number">
+					<input type="tel" pattern="\d{3}[\-]?\d{3}[\-]?\d{4}" name="telephone"><br>
+					<select name="telephone-type">
+						<option value="mobile">Mobile</option>
+						<option value="work">Work</option>
+						<option value="home">Home</option>
+						<option value="main">Main</option>
+					</select>
+				</div>
+			</div>
+			<label>Address(es)</label><input type="button" id="new-add" value="New"><br>
+			<div id="addresses">
+				<div class="address">
+					<label for="address-street">Street</label><br>
+					<input type="text" name="address-street" required><br>
+					<label for="address-city">City</label><br>
+					<input type="text" name="address-city" required><br>
+					<label for="address-state">State</label><br>
+					<input type="text" name="address-state" required><br>
+					<select name="address-type">
+						<option value="home">Home</option>
+						<option value="work">Work</option>
+						<option value="other">Other</option>
+					</select><br>
+				</div>
+			</div>
 			<input type="submit" value="Add">
 		</form>
 		<div id="contacts-list">Contacts:<ul></ul></div>
@@ -30,7 +50,33 @@
 		<li><a href="#"data-id="<%= dataid %>"><%= firstname %> <%= lastname %></a></li>
 		</script>
 		<script type="text/template" id="template-contact-display">
-		<div class="contact" data-id="<%= dataid %>"><h3><%= firstname%> <%= lastname%></h3><input type="button" value="Edit"><p>First name: <%= firstname%></p><p>Last name: <%= lastname%><p>Phone Number(s)</p><ul><% _.forEach(tels, function(tel) { %><li><%= tel%></li><% }); %></ul></p><p>Address(es)</p><ul><% _.forEach(adds, function(add) { %><li><p><%= add.street %></p><p><%= add.city %>, <%= add.state %></p></li><% }); %></ul></div>
+		<div class="contact" data-id="<%= dataid %>"><h3><%= firstname%> <%= lastname%></h3><input type="button" value="Edit"><p>First name: <%= firstname%></p><p>Last name: <%= lastname%><p>Phone Number(s)</p><ul><% _.forEach(tels, function(tel) { %><li><%= tel.number%> [<%= tel.type%>]</li><% }); %></ul></p><p>Address(es)</p><ul><% _.forEach(adds, function(add) { %><li><p><%= add.street %></p><p><%= add.city %>, <%= add.state %>[<%= add.type %>]</p></li><% }); %></ul></div>
+		</script>
+		<script type="text/template" id="template-telephone-number">
+			<div class="telephone-number">
+				<input type="tel" pattern="\d{3}[\-]?\d{3}[\-]?\d{4}" name="telephone" value="<%= tele %>"><br>
+				<select name="telephone-type">
+					<option value="mobile">Mobile</option>
+					<option value="work">Work</option>
+					<option value="home">Home</option>
+					<option value="main">Main</option>
+				</select>
+			</div>
+		</script>
+		<script type="text/template" id="template-address">
+			<div class="address">
+				<label for="address-street">Street</label><br>
+				<input type="text" name="address-street" required value="<%= addstreet %>"><br>
+				<label for="address-city">City</label><br>
+				<input type="text" name="address-city" required value="<%= addcity %>"><br>
+				<label for="address-state">State</label><br>
+				<input type="text" name="address-state" required value="<%= addstate %>"><br>
+				<select name="address-type">
+					<option value="home">Home</option>
+					<option value="work">Work</option>
+					<option value="other">Other</option>
+				</select><br>
+			</div>
 		</script>
 		<script src="//code.jquery.com/jquery.min.js"></script>
 		<script src="js/lodash.min.js"></script>
