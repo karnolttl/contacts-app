@@ -20,11 +20,7 @@
 //             state: 'NY'}]
 // };
 
-(function(exports) {
-  var cd = document.querySelector('#contacts-display');
-  var cl = document.querySelector('#contacts-list > ul');
-  var tn = document.querySelector('#telephone-numbers');
-  var ad = document.querySelector('#addresses');
+var templater = (function (_) {
   var tpl_display = document.querySelector('#template-contact-display');
   var compiled_display = _.template(tpl_display.textContent);
   var tpl_list = document.querySelector('#template-contact-list');
@@ -33,6 +29,37 @@
   var compiled_telephone = _.template(tpl_telephone.textContent);
   var tpl_address = document.querySelector('#template-address');
   var compiled_address = _.template(tpl_address.textContent);
+
+  return {
+    generate: function(type, obj) {
+      var htmlStr = '';
+      if (type === 'display') {
+        htmlStr = compiled_display({'dataid': obj.id,
+                                    'firstname': obj.firstname,
+                                    'lastname': obj.lastname,
+                                    'tels': obj.telephone,
+                                    'adds': obj.address});
+      } else if (type === 'list') {
+        htmlStr = compiled_list({ 'dataid': obj.id,
+                                      'firstname': obj.firstname,
+                                      'lastname': obj.lastname});
+      } else if (type === 'telephone') {
+        htmlStr = compiled_telephone({'tele': obj.number});
+      } else if (type === 'address') {
+        htmlStr = compiled_address({'addstreet': obj.street,
+                                    'addcity': obj.city,
+                                    'addstate': obj.state});
+      }
+        return htmlStr;
+    }
+  }
+})(_);
+
+(function(exports) {
+  var cd = document.querySelector('#contacts-display');
+  var cl = document.querySelector('#contacts-list > ul');
+  var tn = document.querySelector('#telephone-numbers');
+  var ad = document.querySelector('#addresses');
 
   function getVal(selector) {
       return document.querySelector(selector).value
@@ -50,29 +77,39 @@
       input.value = '';
     });
   }
-  function updateContact(contact) {
-    contact.firstname = getVal('input[name="firstname"]');
-    contact.lastname = getVal('input[name="lastname"]');
-
+  function getFormValues() {
     var teleNums = document.querySelectorAll('.telephone-number');
     var teleArray = [];
     _.forEach(teleNums, function(val) {
       var num = val.querySelector('input[name="telephone"]').value;
       var typ = val.querySelector('select[name="telephone-type"]').value;
-      teleArray.push({number: num, type: typ});
+      if (num !== ''){
+        teleArray.push({number: num, type: typ});
+      }
     });
-    contact.telephone = teleArray;
     var addresses = document.querySelectorAll('.address');
     var addArray = [];
-    var addObj = {};
     _.forEach(addresses, function(val) {
       var str = val.querySelector('input[name="address-street"]').value;
       var cit = val.querySelector('input[name="address-city"]').value;
       var sta = val.querySelector('input[name="address-state"]').value;
       var typ = val.querySelector('select[name="address-type"]').value;
-      addArray.push({ street: str, city: cit, state: sta, type: typ});
+      if (str !== '' && cit !== '' && sta !== ''){
+        addArray.push({ street: str, city: cit, state: sta, type: typ});
+      }
     });
-    contact.address = addArray;
+
+    return {
+      add: addArray,
+      tel: teleArray
+    }
+  }
+  function updateContact(contact) {
+    var values = getFormValues();
+    contact.firstname = getVal('input[name="firstname"]');
+    contact.lastname = getVal('input[name="lastname"]');
+    contact.telephone = values.tel;
+    contact.address = values.add;
 
     return contact;
   }
@@ -85,27 +122,18 @@
     setVal('input[name="lastname"]', contact.lastname);
     tn.innerHTML = '';
     _.forEach(contact.telephone, function(tel) {
-      var htmlStr = compiled_telephone({'tele': tel.number});
-      tn.insertAdjacentHTML('beforeend', htmlStr);
+      tn.insertAdjacentHTML('beforeend', templater.generate('telephone', tel));
       tn.querySelector('.telephone-number:last-child > select').value = tel.type;
     });
     ad.innerHTML = '';
     _.forEach(contact.address, function(add) {
-      var htmlStr = compiled_address({  'addstreet': add.street,
-                                        'addcity': add.city,
-                                        'addstate': add.state});
-      ad.insertAdjacentHTML('beforeend', htmlStr);
+      ad.insertAdjacentHTML('beforeend', templater.generate('address', add));
       ad.querySelector('.address:last-child > select').value = add.type;
     });
   }
   function appendContactDisplay(contact) {
     cd.innerHTML = '';
-    var htmlStr = compiled_display({'dataid': contact.id,
-                                    'firstname': contact.firstname,
-                                    'lastname': contact.lastname,
-                                    'tels': contact.telephone,
-                                    'adds': contact.address});
-    cd.insertAdjacentHTML('afterbegin', htmlStr);
+    cd.insertAdjacentHTML('afterbegin', templater.generate('display', contact));
     var btn = cd.querySelector('.contact > input[value=Edit]');
     btn.addEventListener('click',
     function(evt){
@@ -127,10 +155,7 @@
 
   exports.appendContactList = function(contact) {
     clearForm();
-    var htmlStr = compiled_list({ 'dataid': contact.id,
-                                  'firstname': contact.firstname,
-                                  'lastname': contact.lastname});
-    cl.insertAdjacentHTML('beforeend', htmlStr);
+    cl.insertAdjacentHTML('beforeend', templater.generate('list', contact));
     var li = cl.querySelector('li:last-child > a');
     li.addEventListener('click',
     function(evt) {
@@ -141,28 +166,13 @@
   };
 
   exports.buildContact = function() {
-    var teleNums = document.querySelectorAll('.telephone-number');
-    var teleArray = [];
-    _.forEach(teleNums, function(val) {
-      var num = val.querySelector('input[name="telephone"]').value;
-      var typ = val.querySelector('select[name="telephone-type"]').value;
-      teleArray.push({number: num, type: typ});
-    });
-    var addresses = document.querySelectorAll('.address');
-    var addArray = [];
-    _.forEach(addresses, function(val) {
-      var str = val.querySelector('input[name="address-street"]').value;
-      var cit = val.querySelector('input[name="address-city"]').value;
-      var sta = val.querySelector('input[name="address-state"]').value;
-      var typ = val.querySelector('select[name="address-type"]').value;
-      addArray.push({ street: str, city: cit, state: sta, type: typ});
-    });
+    var values = getFormValues();
     return {
       id: generateID(),
       firstname: getVal('input[name="firstname"]'),
       lastname: getVal('input[name="lastname"]'),
-      telephone: teleArray,
-      address: addArray
+      telephone: values.tel,
+      address: values.add
     };
   };
 }
@@ -173,33 +183,28 @@ function makeItHappen () {
   h.appendContactList(contact);
 }
 
+(function(){
 var form = document.querySelector('#form');
-
 form.addEventListener("submit", makeItHappen, false);
-
 form.addEventListener("submit", function(evt) {
   evt.preventDefault();
 });
+})();
 
-var tpl_telephone = document.querySelector('#template-telephone-number');
-var compiled_telephone = _.template(tpl_telephone.textContent);
-var tpl_address = document.querySelector('#template-address');
-var compiled_address = _.template(tpl_address.textContent);
-var tn = document.querySelector('#telephone-numbers');
-var ad = document.querySelector('#addresses');
-
+(function(){
 var newTel = document.querySelector('#new-tel');
+var tn = document.querySelector('#telephone-numbers');
 newTel.addEventListener('click', function(evt) {
-  var htmlStr = compiled_telephone({'tele': ''});
-  tn.insertAdjacentHTML('beforeend', htmlStr);
+  tn.insertAdjacentHTML('beforeend', templater.generate('telephone', {'tele': ''}));
 },
 false);
+})();
 
+(function(){
 var newAdd = document.querySelector('#new-add');
+var ad = document.querySelector('#addresses');
 newAdd.addEventListener('click', function(evt) {
-  var htmlStr = compiled_address({  'addstreet': '',
-                                    'addcity': '',
-                                    'addstate': ''});
-  ad.insertAdjacentHTML('beforeend', htmlStr);
+  ad.insertAdjacentHTML('beforeend', templater.generate('address', {'addstreet': '', 'addcity': '', 'addstate': ''}));
 },
 false);
+})();
