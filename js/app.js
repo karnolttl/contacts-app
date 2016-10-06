@@ -67,10 +67,6 @@ var templater = (function (_) {
   function setVal(selector, val) {
     document.querySelector(selector).value = val;
   }
-  function generateID() {
-    var d = new Date();
-    return d.valueOf();
-  }
   function clearForm() {
     var formInputs = document.querySelectorAll('input[type^=te]');
     _.forEach(formInputs, function(input) {
@@ -168,7 +164,7 @@ var templater = (function (_) {
   exports.buildContact = function() {
     var values = getFormValues();
     return {
-      id: generateID(),
+      id: _.uniqueId(),
       firstname: getVal('input[name="firstname"]'),
       lastname: getVal('input[name="lastname"]'),
       telephone: values.tel,

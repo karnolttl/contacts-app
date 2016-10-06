@@ -1,12 +1,78 @@
 body {
   background-color: whitesmoke;
-  text-align: left;
+  text-align: center;
   min-width: 320px;
   max-width: 500px;
   margin: auto;
   font-family: 'Oswald', sans-serif;
   box-sizing: border-box;
   position: relative;
+}
+
+#form, #contacts-list, #contacts-display {
+  text-align: left;
+  width: 80%;
+  margin: 1rem auto;
+}
+
+input[type="text"], input[type="tel"] {
+  width: 70%;
+  margin: .0625rem 0rem;
+  box-sizing: border-box;
+}
+
+.telephone-number, .address {
+  border-top: 1px solid darkgrey;
+  margin-top: .25rem;
+  padding-top: .25rem;
+}
+
+.telephone-number:first-child, .address:first-child  {
+  border: none;
+  margin-top: inherit;
+  padding-top: inherit;
+}
+
+.section-header {
+  width: 70%;
+  margin: .25rem 0rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+#contacts-list > ul {
+  list-style-type: none;
+  padding: 0;
+  text-align: center;
+}
+
+.contact-li {
+  background-color: #c0c0c0;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  margin: .25rem 0rem;
+  width: 70%;
+}
+
+.contact-li > a {
+  text-decoration: none;
+  color: black;
+}
+
+#contacts-display {
+  z-index: 10000;
+  background-color: #c0c0c0;
+  /*position: absolute;*/
+  top: 0;
+  width: 100%;
+  margin: 0;
+}
+
+#contact {
+  width: 80%;
+  margin: auto;
 }
 
 .hidden {

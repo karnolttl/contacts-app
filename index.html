@@ -10,14 +10,15 @@
 </head>
   <body>
 		<form id=form>
-			<label for="firstname">First name</label><br>
-			<input type="text" name="firstname" required><br>
-			<label for="lastname">Last name</label><br>
-			<input type="text" name="lastname" required><br>
-			<label>Phone number(s)</label><input type="button" id="new-tel" value="New"><br>
+			<input type="text" name="firstname" placeholder="First name" required><br>
+			<input type="text" name="lastname" placeholder="Last name" required><br>
+			<div class="section-header">
+				<label>Phone number(s)</label>
+				<input type="button" id="new-tel" value="New">
+			</div>
 			<div id="telephone-numbers">
 				<div class="telephone-number">
-					<input type="tel" pattern="\d{3}[\-]?\d{3}[\-]?\d{4}" name="telephone" required><br>
+					<input type="tel" pattern="\d{3}[\-]?\d{3}[\-]?\d{4}" name="telephone" placeholder="Telephone" required>
 					<select name="telephone-type">
 						<option value="mobile">Mobile</option>
 						<option value="work">Work</option>
@@ -26,35 +27,47 @@
 					</select>
 				</div>
 			</div>
-			<label>Address(es)</label><input type="button" id="new-add" value="New"><br>
+			<div class="section-header">
+				<label>Address(es)</label>
+				<input type="button" id="new-add" value="New">
+			</div>
 			<div id="addresses">
 				<div class="address">
-					<label for="address-street">Street</label><br>
-					<input type="text" name="address-street" required><br>
-					<label for="address-city">City</label><br>
-					<input type="text" name="address-city" required><br>
-					<label for="address-state">State</label><br>
-					<input type="text" name="address-state" required><br>
+					<input type="text" name="address-street" placeholder="Street" required>
 					<select name="address-type">
 						<option value="home">Home</option>
 						<option value="work">Work</option>
 						<option value="other">Other</option>
 					</select><br>
+					<input type="text" name="address-city" placeholder="City" required><br>
+					<input type="text" name="address-state" placeholder="State" required><br>
 				</div>
 			</div>
-			<input type="submit" value="Add">
+			<div class="section-header">
+				<label>Contacts</label>
+				<input type="submit" value="Add">
+			</div>
 		</form>
-		<div id="contacts-list">Contacts:<ul></ul></div>
+		<div id="contacts-list"><ul></ul></div>
 		<div id="contacts-display"></div>
 		<script type="text/template" id="template-contact-list">
-		<li><a href="#"data-id="<%= dataid %>"><%= firstname %> <%= lastname %></a></li>
+			<li class="contact-li"><a href="#" data-id="<%= dataid %>"><%= firstname %> <%= lastname %></a></li>
 		</script>
 		<script type="text/template" id="template-contact-display">
-		<div class="contact" data-id="<%= dataid %>"><h3><%= firstname%> <%= lastname%></h3><input type="button" value="Edit"><p>First name: <%= firstname%></p><p>Last name: <%= lastname%><p>Phone Number(s)</p><ul><% _.forEach(tels, function(tel) { %><li><%= tel.number%> [<%= tel.type%>]</li><% }); %></ul></p><p>Address(es)</p><ul><% _.forEach(adds, function(add) { %><li><p><%= add.street %></p><p><%= add.city %>, <%= add.state %>[<%= add.type %>]</p></li><% }); %></ul></div>
+			<div class="contact" data-id="<%= dataid %>">
+				<h3><%= firstname%> <%= lastname%></h3>
+				<input type="button" value="Edit">
+				<p>First name: <%= firstname%></p>
+				<p>Last name: <%= lastname%></p>
+					<p>Phone Number(s)</p>
+						<ul><% _.forEach(tels, function(tel) { %><li><%= tel.number%> [<%= tel.type%>]</li><% }); %></ul>
+					<p>Address(es)</p>
+						<ul><% _.forEach(adds, function(add) { %><li><p><%= add.street %></p><p><%= add.city %>, <%= add.state %>[<%= add.type %>]</p></li><% }); %></ul>
+			</div>
 		</script>
 		<script type="text/template" id="template-telephone-number">
 			<div class="telephone-number">
-				<input type="tel" pattern="\d{3}[\-]?\d{3}[\-]?\d{4}" name="telephone" value="<%= tele %>"><br>
+				<input type="tel" pattern="\d{3}[\-]?\d{3}[\-]?\d{4}" name="telephone" placeholder="Telephone" value="<%= tele %>">
 				<select name="telephone-type">
 					<option value="mobile">Mobile</option>
 					<option value="work">Work</option>
@@ -65,17 +78,14 @@
 		</script>
 		<script type="text/template" id="template-address">
 			<div class="address">
-				<label for="address-street">Street</label><br>
-				<input type="text" name="address-street" required value="<%= addstreet %>"><br>
-				<label for="address-city">City</label><br>
-				<input type="text" name="address-city" required value="<%= addcity %>"><br>
-				<label for="address-state">State</label><br>
-				<input type="text" name="address-state" required value="<%= addstate %>"><br>
+				<input type="text" name="address-street" placeholder="Street" value="<%= addstreet %>" required>
 				<select name="address-type">
 					<option value="home">Home</option>
 					<option value="work">Work</option>
 					<option value="other">Other</option>
 				</select><br>
+				<input type="text" name="address-city" placeholder="City" value="<%= addcity %>" required><br>
+				<input type="text" name="address-state" placeholder="State" value="<%= addstate %>" required><br>
 			</div>
 		</script>
 		<script src="js/lodash.min.js"></script>
